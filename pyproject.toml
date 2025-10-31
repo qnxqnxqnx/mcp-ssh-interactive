@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcp-ssh-interactive"
+version = "1.0.0"
+description = "MCP server for remote SSH command execution"
+authors = [{name = "Aleksej Spenst", email = "51292281+qnxqnxqnx@users.noreply.github.com"}]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "mcp>=0.1.0",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+mcp-ssh-interactive = "ssh_mcp_server.server:run"
+
+
+
