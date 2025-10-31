@@ -112,9 +112,7 @@ Add an entry for this server in your MCP client configuration. The generic struc
 {
   "mcpServers": {
     "mcp-ssh-interactive": {
-      "command": "mcp-ssh-interactive",
-      "args": [],
-      "env": {}
+      "command": "mcp-ssh-interactive"
     }
   }
 }
