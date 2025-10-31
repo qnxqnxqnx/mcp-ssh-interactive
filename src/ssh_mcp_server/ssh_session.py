@@ -187,8 +187,11 @@ class SSHSessionManager:
         cmd_parts = [
             'ssh',
             '-tt',
-            '-i', conn_config.key_path,
         ]
+        
+        # Add key path if provided (recommended for security)
+        if conn_config.key_path:
+            cmd_parts.extend(['-i', conn_config.key_path])
         
         if conn_config.port != 22:
             cmd_parts.extend(['-p', str(conn_config.port)])

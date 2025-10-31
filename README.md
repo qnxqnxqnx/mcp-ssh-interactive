@@ -14,26 +14,39 @@ An MCP (Model Context Protocol) server that enables AI agents to run fully inter
 
 - **Python**: 3.9+
 - **tmux**: 2.6+ (`tmux -V`)
+  - Install: `brew install tmux` on macOS, `apt install tmux` / `yum install tmux` / `pacman -S tmux` on Linux
 - **OpenSSH client**: 7.0+
 - **OS**: Linux or macOS
 
 ### Installation
 
-Install from source (this repository):
+**For end users** (just want to use the MCP server):
 
 ```bash
-# Clone the repository (or navigate to the directory)
+# Clone the repository
+git clone https://github.com/yourusername/mcp-ssh-interactive.git
+cd mcp-ssh-interactive
+
+# Install with pip
+pip install .
+```
+
+Or using pipx for an isolated environment (recommended):
+
+```bash
+# Install with pipx
+pipx install .
+```
+
+**For developers** (working on the code):
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/mcp-ssh-interactive.git
 cd mcp-ssh-interactive
 
 # Install in editable mode
 pip install -e .
-```
-
-Or using pipx for an isolated environment:
-
-```bash
-# Install from local source
-pipx install --editable .
 ```
 
 Note: This package is not currently published to PyPI, so installation from source is required.
@@ -56,21 +69,30 @@ connections:
     key_path: ~/.ssh/id_ed25519
     port: 22
     description: Production database host (read-only)
+  test-server:
+    host: test.example.com
+    user: demo
+    password: mypassword
+    port: 22
+    description: Test server with password authentication
 ```
 
 Notes:
-- `key_path` must exist and be readable; typical permissions `chmod 600`.
-- `password` is optionally supported in config but keys are strongly recommended.
-- `~/.ssh_mcp_config.yml` is required; if missing or invalid the server exits with a clear error.
+- Either `key_path` or `password` must be provided for authentication
+- `key_path` is strongly recommended over `password` for security
+- If using `key_path`, it must exist and be readable; typical permissions `chmod 600`
+- `~/.ssh_mcp_config.yml` is required; if missing or invalid the server exits with a clear error
 
 Schema (informal):
 - **connections**: map of connection name → object
   - **host** (string, required)
   - **user** (string, required)
-  - **key_path** (string, required; `~` expanded)
+  - **key_path** (string, optional but recommended; `~` expanded; verified to exist)
+  - **password** (string, optional; requires either this or `key_path`)
   - **port** (int, default `22`)
-  - **password** (string, optional; avoid where possible)
   - **description** (string, optional)
+  
+Note: At least one of `key_path` or `password` must be provided. Using `key_path` is strongly recommended for security.
 
 ### Starting the MCP server
 

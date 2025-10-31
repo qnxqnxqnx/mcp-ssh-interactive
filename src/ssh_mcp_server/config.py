@@ -26,15 +26,18 @@ class ConnectionConfig:
             raise ConfigError(f"Connection '{name}': 'host' is required")
         if not self.user:
             raise ConfigError(f"Connection '{name}': 'user' is required")
-        if not self.key_path:
-            raise ConfigError(f"Connection '{name}': 'key_path' is required")
         
-        # Expand path
-        self.key_path = os.path.expanduser(self.key_path)
+        # Validate authentication: must have either key_path or password
+        if not self.key_path and not self.password:
+            raise ConfigError(f"Connection '{name}': Either 'key_path' or 'password' is required")
         
-        # Verify key file exists
-        if not os.path.exists(self.key_path):
-            raise ConfigError(f"Connection '{name}': Key file not found: {self.key_path}")
+        # Expand and verify key path if provided
+        if self.key_path:
+            self.key_path = os.path.expanduser(self.key_path)
+            
+            # Verify key file exists
+            if not os.path.exists(self.key_path):
+                raise ConfigError(f"Connection '{name}': Key file not found: {self.key_path}")
     
     def to_dict(self) -> dict:
         """Convert to dictionary (for API responses, without sensitive data)."""

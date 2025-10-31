@@ -155,8 +155,15 @@ def test_ssh_command_building():
         # Verify command structure
         assert 'ssh' in ssh_cmd
         assert '-tt' in ssh_cmd
-        assert '-i' in ssh_cmd
-        assert conn_config.key_path in ssh_cmd
+        
+        # Check key path if provided
+        if conn_config.key_path:
+            assert '-i' in ssh_cmd
+            assert conn_config.key_path in ssh_cmd
+            print("✓ SSH command includes key path")
+        else:
+            print("✓ SSH command uses password authentication (no key path)")
+        
         assert f'{conn_config.user}@{conn_config.host}' in ssh_cmd
         print("✓ SSH command has correct structure")
         
