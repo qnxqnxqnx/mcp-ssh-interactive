@@ -3,6 +3,9 @@ import yaml
 from typing import Dict, Optional
 from pathlib import Path
 
+# Import resolve_info_file_path lazily to avoid circular import
+# It's used in ConnectionConfig.__init__ but imported there to avoid issues
+
 
 class ConfigError(Exception):
     """Raised when configuration is invalid or missing."""
@@ -38,6 +41,15 @@ class ConnectionConfig:
             # Verify key file exists
             if not os.path.exists(self.key_path):
                 raise ConfigError(f"Connection '{name}': Key file not found: {self.key_path}")
+        
+        # Handle info_file path resolution
+        # Import here to avoid circular dependency (state imports config for tests)
+        info_file = config_dict.get('info_file')
+        if info_file:
+            from .state import resolve_info_file_path
+            self.info_file = resolve_info_file_path(info_file)
+        else:
+            self.info_file = None
     
     def to_dict(self) -> dict:
         """Convert to dictionary (for API responses, without sensitive data)."""
@@ -53,12 +65,19 @@ class ConnectionConfig:
 class ConfigManager:
     """Manages SSH MCP server configuration."""
     
-    CONFIG_PATH = os.path.expanduser('~/.ssh_mcp_config.yml')
+    BASE_DIR = os.path.expanduser('~/.mcp-ssh-interactive')
+    CONFIG_PATH = os.path.join(BASE_DIR, 'config.yml')
     
     def __init__(self, config_path: Optional[str] = None):
         self.config_path = config_path or self.CONFIG_PATH
         self.connections: Dict[str, ConnectionConfig] = {}
+        self._ensure_base_directory()
         self._load_config()
+    
+    def _ensure_base_directory(self):
+        """Ensure the base directory structure exists."""
+        base_dir = os.path.dirname(self.config_path) if self.config_path != self.CONFIG_PATH else self.BASE_DIR
+        os.makedirs(base_dir, mode=0o700, exist_ok=True)
     
     def _load_config(self):
         """Load and parse configuration file."""

@@ -18,7 +18,7 @@ def test_session_manager_initialization():
     print("\n=== Testing SSH Session Manager Initialization ===")
     
     # Use existing config (from earlier tests)
-    config_path = os.path.expanduser("~/.ssh_mcp_config.yml")
+    config_path = os.path.expanduser("~/.mcp-ssh-interactive/config.yml")
     if not os.path.exists(config_path):
         print("⚠️  No config file found, skipping test")
         return
@@ -58,7 +58,7 @@ def test_session_validation():
     """Test session name validation."""
     print("\n=== Testing Session Name Validation ===")
     
-    config_path = os.path.expanduser("~/.ssh_mcp_config.yml")
+    config_path = os.path.expanduser("~/.mcp-ssh-interactive/config.yml")
     if not os.path.exists(config_path):
         print("⚠️  No config file found, skipping test")
         return
@@ -125,7 +125,7 @@ def test_ssh_command_building():
     """Test SSH command building."""
     print("\n=== Testing SSH Command Building ===")
     
-    config_path = os.path.expanduser("~/.ssh_mcp_config.yml")
+    config_path = os.path.expanduser("~/.mcp-ssh-interactive/config.yml")
     if not os.path.exists(config_path):
         print("⚠️  No config file found, skipping test")
         return
@@ -184,7 +184,7 @@ def test_session_status():
     """Test session status checking."""
     print("\n=== Testing Session Status ===")
     
-    config_path = os.path.expanduser("~/.ssh_mcp_config.yml")
+    config_path = os.path.expanduser("~/.mcp-ssh-interactive/config.yml")
     if not os.path.exists(config_path):
         print("⚠️  No config file found, skipping test")
         return
@@ -227,7 +227,7 @@ if __name__ == "__main__":
         print("✅ All SSH session manager tests passed!")
         print("=" * 60)
         print("\nTo test actual SSH connections, you need:")
-        print("1. A valid SSH server in ~/.ssh_mcp_config.yml")
+        print("1. A valid SSH server in ~/.mcp-ssh-interactive/config.yml")
         print("2. Valid SSH key with proper permissions")
         print("3. Run: session_manager.open_connection(config_name, session_name)")
         

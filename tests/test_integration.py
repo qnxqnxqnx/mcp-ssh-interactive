@@ -40,7 +40,8 @@ def test_imports():
             list_connections_tool,
             execute_command_tool,
             get_terminal_output_tool,
-            interrupt_command_tool
+            interrupt_command_tool,
+            get_server_info_tool
         )
         print("✓ All tools imported successfully")
         
@@ -122,7 +123,7 @@ if __name__ == "__main__":
         print("\nTo start the server:")
         print("  mcp-ssh-interactive")
         print("\nMake sure you have:")
-        print("  1. Created ~/.ssh_mcp_config.yml with your SSH servers")
+        print("  1. Created ~/.mcp-ssh-interactive/config.yml with your SSH servers")
         print("  2. tmux installed (tmux -V)")
         print("  3. Valid SSH keys with proper permissions")
         sys.exit(0)

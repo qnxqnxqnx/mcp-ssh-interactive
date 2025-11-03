@@ -28,6 +28,7 @@ from .tools.terminal import (
     get_terminal_output_tool,
     interrupt_command_tool
 )
+from .tools.server_info import get_server_info_tool
 
 # Set up logging
 logging.basicConfig(
@@ -62,7 +63,7 @@ async def handle_list_tools() -> list[types.Tool]:
         ),
         types.Tool(
             name="open_connection",
-            description="Opens a new SSH connection to a remote server and creates a persistent tmux session for it. You must provide a connection_config_name (from list_available_configs) and a unique session_name. The session will remain active until you explicitly close it. Use the session_name to execute commands and manage this connection.",
+            description="Opens a new SSH connection to a remote server and creates a persistent tmux session for it. You must provide a connection_config_name (from list_available_configs) and a unique session_name. The session will remain active until you explicitly close it. Use the session_name to execute commands and manage this connection. After successfully opening a connection, check if the server has additional information by calling get_server_info with the connection_config_name.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -151,6 +152,20 @@ async def handle_list_tools() -> list[types.Tool]:
                 },
                 "required": ["session_name"]
             }
+        ),
+        types.Tool(
+            name="get_server_info",
+            description="Retrieves server-specific information and instructions for a connection configuration. Use this after opening a connection to learn about server-specific procedures, commands, and important information. The information applies to all sessions for this server configuration, so you only need to call it once per server configuration.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "connection_config_name": {
+                        "type": "string",
+                        "description": "Name of the connection configuration (from list_available_configs)"
+                    }
+                },
+                "required": ["connection_config_name"]
+            }
         )
     ]
 
@@ -205,6 +220,12 @@ async def handle_call_tool(
                 arguments.get("session_name")
             )
         
+        elif name == "get_server_info":
+            result = get_server_info_tool(
+                config_manager,
+                arguments.get("connection_config_name")
+            )
+        
         else:
             result = {"error": f"Unknown tool: {name}"}
         
@@ -239,6 +260,12 @@ async def main():
         logger.info("Initializing state manager...")
         state_manager = StateManager()
         logger.info(f"Found {len(state_manager.sessions)} existing sessions")
+        
+        # Ensure all required directories exist
+        from .state import ensure_log_directory, ensure_info_directory
+        ensure_log_directory()
+        ensure_info_directory()
+        logger.info("Ensured all required directories exist")
         
         logger.info("Initializing session manager...")
         session_manager = SSHSessionManager(config_manager, state_manager)

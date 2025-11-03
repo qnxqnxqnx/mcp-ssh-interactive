@@ -9,7 +9,7 @@ import tempfile
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from ssh_mcp_server.config import ConfigManager, ConfigError
-from ssh_mcp_server.state import StateManager, ensure_log_directory, get_log_file_path
+from ssh_mcp_server.state import StateManager, ensure_log_directory, get_log_file_path, ensure_info_directory
 
 
 def test_log_directory():
@@ -107,7 +107,7 @@ def test_config_manager():
     """Test config manager - requires a real config file."""
     print("\n=== Testing Config Manager ===")
     
-    config_path = os.path.expanduser("~/.ssh_mcp_config.yml")
+    config_path = os.path.expanduser("~/.mcp-ssh-interactive/config.yml")
     
     if not os.path.exists(config_path):
         print(f"⚠️  Config file not found: {config_path}")
@@ -147,6 +147,53 @@ def test_config_manager():
         print("   Check your config file format")
 
 
+def test_info_directory():
+    """Test info directory creation."""
+    print("\n=== Testing Info Directory ===")
+    
+    info_dir = ensure_info_directory()
+    print(f"✓ Info directory created/verified: {info_dir}")
+    
+    # Check it exists
+    assert os.path.exists(info_dir), "Info directory should exist"
+    print(f"✓ Info directory exists")
+    
+    # Check permissions (should be 700)
+    stat_info = os.stat(info_dir)
+    perms = oct(stat_info.st_mode)[-3:]
+    print(f"✓ Info directory permissions: {perms}")
+    
+    print("✅ Info directory tests passed!")
+
+
+def test_info_file_resolution():
+    """Test info_file path resolution."""
+    print("\n=== Testing Info File Path Resolution ===")
+    
+    from ssh_mcp_server.state import resolve_info_file_path
+    
+    # Test relative path
+    info_file = "test-server.md"
+    resolved = resolve_info_file_path(info_file)
+    assert "test-server.md" in resolved, "Resolved path should contain filename"
+    assert "info" in resolved, "Resolved path should be in info directory"
+    print(f"✓ Relative path resolved: {info_file} -> {resolved}")
+    
+    # Test absolute path with ~
+    abs_path = "~/custom/path/server.md"
+    resolved = resolve_info_file_path(abs_path)
+    assert abs_path.replace("~", os.path.expanduser("~")) == resolved
+    print(f"✓ Absolute path with ~ resolved: {abs_path} -> {resolved}")
+    
+    # Test absolute path with /
+    abs_path = "/tmp/server.md"
+    resolved = resolve_info_file_path(abs_path)
+    assert resolved == abs_path
+    print(f"✓ Absolute path with / resolved: {abs_path} -> {resolved}")
+    
+    print("✅ Info file path resolution tests passed!")
+
+
 if __name__ == "__main__":
     print("=" * 60)
     print("Testing SSH MCP Server - Core Infrastructure")
@@ -154,6 +201,8 @@ if __name__ == "__main__":
     
     try:
         test_log_directory()
+        test_info_directory()
+        test_info_file_resolution()
         test_state_manager()
         test_config_manager()
         

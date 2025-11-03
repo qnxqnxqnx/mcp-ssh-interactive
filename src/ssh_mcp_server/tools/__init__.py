@@ -13,6 +13,7 @@ from .terminal import (
     get_terminal_output_tool,
     interrupt_command_tool
 )
+from .server_info import get_server_info_tool
 
 __all__ = [
     "list_available_configs",
@@ -22,6 +23,7 @@ __all__ = [
     "execute_command_tool",
     "get_terminal_output_tool",
     "interrupt_command_tool",
+    "get_server_info_tool",
 ]
 
 

@@ -46,13 +46,20 @@ class SessionState:
 class StateManager:
     """Manages SSH MCP server state (active sessions)."""
     
-    STATE_PATH = os.path.expanduser('~/.ssh_mcp_server_state.json')
+    BASE_DIR = os.path.expanduser('~/.mcp-ssh-interactive')
+    STATE_PATH = os.path.join(BASE_DIR, 'state.json')
     VERSION = '1.0'
     
     def __init__(self, state_path: Optional[str] = None):
         self.state_path = state_path or self.STATE_PATH
         self.sessions: Dict[str, SessionState] = {}
+        self._ensure_base_directory()
         self._load_state()
+    
+    def _ensure_base_directory(self):
+        """Ensure the base directory structure exists."""
+        base_dir = os.path.dirname(self.state_path) if self.state_path != self.STATE_PATH else self.BASE_DIR
+        os.makedirs(base_dir, mode=0o700, exist_ok=True)
     
     def _load_state(self):
         """Load state from JSON file."""
@@ -90,7 +97,7 @@ class StateManager:
             # Write to temporary file
             fd, temp_path = tempfile.mkstemp(
                 dir=os.path.dirname(self.state_path),
-                prefix='.ssh_mcp_state_',
+                prefix='.mcp_ssh_state_',
                 suffix='.tmp'
             )
             
@@ -145,7 +152,8 @@ class StateManager:
 
 def ensure_log_directory():
     """Create log directory if it doesn't exist."""
-    log_dir = os.path.expanduser('~/.ssh_mcp_logs')
+    base_dir = os.path.expanduser('~/.mcp-ssh-interactive')
+    log_dir = os.path.join(base_dir, 'logs')
     
     if not os.path.exists(log_dir):
         os.makedirs(log_dir, mode=0o700)
@@ -157,6 +165,33 @@ def get_log_file_path(session_name: str) -> str:
     """Get log file path for a session."""
     log_dir = ensure_log_directory()
     return os.path.join(log_dir, f"{session_name}.log")
+
+
+def ensure_info_directory():
+    """Create info directory if it doesn't exist."""
+    base_dir = os.path.expanduser('~/.mcp-ssh-interactive')
+    info_dir = os.path.join(base_dir, 'info')
+    
+    if not os.path.exists(info_dir):
+        os.makedirs(info_dir, mode=0o700)
+    
+    return info_dir
+
+
+def resolve_info_file_path(info_file: str) -> str:
+    """Resolve info_file path to absolute path.
+    
+    Supports:
+    - Absolute paths (starting with / or ~)
+    - Relative paths (relative to ~/.mcp-ssh-interactive/info/)
+    """
+    if info_file.startswith('/') or info_file.startswith('~'):
+        # Absolute path
+        return os.path.expanduser(info_file)
+    else:
+        # Relative to info directory
+        info_dir = ensure_info_directory()
+        return os.path.join(info_dir, info_file)
 
 
 

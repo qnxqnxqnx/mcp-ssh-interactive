@@ -118,7 +118,7 @@ class SSHSessionManager:
             raise SSHSessionError(f"Failed to update state: {e}")
         
         # 12. Return success
-        return {
+        result = {
             'success': True,
             'session_name': session_name,
             'message': 'SSH connection established',
@@ -128,6 +128,19 @@ class SSHSessionManager:
                 'port': conn_config.port
             }
         }
+        
+        # Add server info hint if info_file is configured
+        if conn_config.info_file:
+            result['has_server_info'] = True
+            result['info_hint'] = (
+                f"This server has additional information and instructions. "
+                f"Call get_server_info with connection_config_name='{connection_config_name}' "
+                f"to see how to work with this server."
+            )
+        else:
+            result['has_server_info'] = False
+        
+        return result
     
     def close_connection(self, session_name: str) -> dict:
         """Close an SSH connection."""
