@@ -115,8 +115,8 @@ When an info file is defined for a server, users can simply mention tasks like "
 
 ## Authentication & Access
 
-- **Root access**: `sudo su -` (password: `prod_admin_2024`)
-- **Application user**: `sudo -u webapp bash` (required for all app commands)
+- Root access: `sudo su -` (password: `prod_admin_2024`)
+- Application user: `sudo -u webapp bash` (required for all app commands)
 
 ## Key Paths
 
@@ -127,38 +127,28 @@ When an info file is defined for a server, users can simply mention tasks like "
 ## Common Tasks
 
 ### Restart Application
-```bash
 sudo systemctl restart webapp
-```
 
 ### Deploy New Version
-```bash
 cd /opt/webapp/releases
 sudo -u webapp /opt/webapp/bin/deploy.sh --version latest
 curl -s http://localhost:8080/health | jq .
-```
 
 ### Check Application Status
-```bash
 sudo systemctl status webapp
 journalctl -u webapp -n 50 --no-pager
-```
 
 ### View Logs
-```bash
 tail -f /var/log/webapp/application.log
-```
 
 ### Database Backup
-```bash
 sudo /usr/local/bin/backup-db.sh production
-```
 
 ## Important Constraints
 
-- **Read-only database**: This server connects to a read-only replica. Never attempt write operations.
-- **Maintenance window**: Deployments only between 02:00-04:00 UTC
-- **Monitoring**: https://monitoring.example.com/d/webapp-prod
+- Read-only database: This server connects to a read-only replica. Never attempt write operations.
+- Maintenance window: Deployments only between 02:00-04:00 UTC
+- Monitoring: https://monitoring.example.com/d/webapp-prod
 ```
 
 2. Reference it in your config:
