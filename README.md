@@ -102,20 +102,63 @@ Note: At least one of `key_path` or `password` must be provided. Using `key_path
 
 ### Server-Specific Information
 
-You can provide server-specific instructions, commands, and important information for each server by creating markdown files and referencing them in your configuration using the `info_file` field.
+You can provide server-specific instructions, commands, and important information for each server by creating markdown files and referencing them in your configuration using the `info_file` field. This enables AI agents to interact with a server using the specific tools, methods, and workflows that are relevant to that particular environment. You can also document routine tasks and procedures in these files, allowing AI agents to quickly understand a server's unique requirements and successfully execute tasks based on user requests. 
 
 **Example:**
 
-1. Create a markdown file at `~/.mcp-ssh-interactive/info/my-server.md`:
+When an info file is defined for a server, users can simply mention tasks like "restart the application" or "deploy the latest version", and the AI agent will know exactly which commands to execute and what procedures to follow for that specific server.
+
+1. Create a markdown file at `~/.mcp-ssh-interactive/info/prod-web-server.md`:
 
 ```markdown
-# My Server Instructions
+# Production Web Server
 
-To login as root on this target always use the command `su` with the password specified in the secure vault.
+## Authentication & Access
 
-To check the system status use the command `systemctl status important-service`
+- **Root access**: `sudo su -` (password: `prod_admin_2024`)
+- **Application user**: `sudo -u webapp bash` (required for all app commands)
 
-To restart all application services use the command `/usr/local/bin/restart-services.sh`
+## Key Paths
+
+- Application: `/opt/webapp/current`
+- Configuration: `/opt/webapp/config/production.yml`
+- Logs: `/var/log/webapp/`
+
+## Common Tasks
+
+### Restart Application
+```bash
+sudo systemctl restart webapp
+```
+
+### Deploy New Version
+```bash
+cd /opt/webapp/releases
+sudo -u webapp /opt/webapp/bin/deploy.sh --version latest
+curl -s http://localhost:8080/health | jq .
+```
+
+### Check Application Status
+```bash
+sudo systemctl status webapp
+journalctl -u webapp -n 50 --no-pager
+```
+
+### View Logs
+```bash
+tail -f /var/log/webapp/application.log
+```
+
+### Database Backup
+```bash
+sudo /usr/local/bin/backup-db.sh production
+```
+
+## Important Constraints
+
+- **Read-only database**: This server connects to a read-only replica. Never attempt write operations.
+- **Maintenance window**: Deployments only between 02:00-04:00 UTC
+- **Monitoring**: https://monitoring.example.com/d/webapp-prod
 ```
 
 2. Reference it in your config:
