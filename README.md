@@ -199,6 +199,10 @@ Different MCP clients might use different configuration file formats and locatio
 
 After adding, restart or reload your client so it can discover the new server.
 
+### Typical Workflow
+
+When this MCP server is available to an agent, you can simply ask the agent to open a session on server `my-server` and describe the tasks you need to perform. The agent will normally automatically check the list of available servers in the config file, find the named server, open a new session, and run any initialization tasks specified in the `info_file` field if configured.
+
 ### Available tools
 
 The server provides the following tools:
