@@ -107,7 +107,7 @@ You can provide server-specific instructions, commands, and important informatio
 
 **Example:**
 
-When an info file is defined for a server, users can simply mention tasks like "restart the application" or "deploy the latest version", and the AI agent will know exactly which commands to execute and what procedures to follow for that specific server.
+When an `info_file` is defined for a server, users can simply mention tasks like "restart the application" or "deploy the latest version", and the AI agent will know exactly which commands to execute and what procedures to follow for that specific server.
 
 1. Create a markdown file at `~/.mcp-ssh-interactive/info/prod-web-server.md`:
 
@@ -169,7 +169,7 @@ connections:
 - **Paths starting with `~`** (e.g., `~/custom/path/server.md`): Treated as absolute paths
 - **Paths starting with `/`** (e.g., `/tmp/server.md`): Treated as absolute paths
 
-When you open a connection to a server with an `info_file` configured, the response will include a hint prompting you to call `get_server_info` to retrieve the server-specific information. This information applies to all sessions for a server configuration, so you only need to call it once per server.
+Server-specific information from `info_file` is available for all sessions using that server configuration.
 
 ### Starting the MCP server
 
@@ -199,17 +199,17 @@ Different MCP clients might use different configuration file formats and locatio
 
 After adding, restart or reload your client so it can discover the new server.
 
-### Available tools and typical workflow
+### Available tools
 
-The server exposes the following tools:
-- **list_available_configs**: discover connection names from `~/.mcp-ssh-interactive/config.yml`.
-- **open_connection**: start SSH + tmux logging under a unique `session_name`. After successfully opening a connection, check if the server has additional information by calling `get_server_info` with the connection_config_name.
-- **list_connections**: view active sessions and their status.
-- **execute_command**: send a command to the remote terminal (returns immediately).
-- **get_terminal_output**: capture the visible terminal buffer (poll for completion).
-- **interrupt_command**: send Ctrl+C to stop a running process.
-- **close_connection**: terminate tmux session and remove from state.
-- **get_server_info**: retrieve server-specific information and instructions for a connection configuration. Use this after opening a connection to learn about server-specific procedures, commands, and important information. The information applies to all sessions for a server configuration, so you only need to call it once per server configuration.
+The server provides the following tools:
+- **list_available_configs**: Lists available connection configurations from `~/.mcp-ssh-interactive/config.yml`.
+- **open_connection**: Opens an SSH connection and starts a tmux session with logging.
+- **list_connections**: Lists active connections and their status.
+- **execute_command**: Executes a command on the remote server (returns immediately).
+- **get_terminal_output**: Retrieves the current terminal output from the remote session.
+- **interrupt_command**: Sends Ctrl+C to interrupt a running command.
+- **close_connection**: Closes a connection and terminates the tmux session.
+- **get_server_info**: Retrieves server-specific information from the configured `info_file` (if available).
 
 ### File Structure
 
