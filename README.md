@@ -9,6 +9,7 @@ An MCP (Model Context Protocol) server that enables AI agents to run fully inter
 - **Multiple concurrent connections**: manage many servers in parallel.
 - **Complete output capture**: retrieve terminal buffer reliably.
 - **Async commands + polling**: fire-and-check pattern for long tasks.
+- **Server-specific information**: provide custom instructions and commands per server via markdown files.
 
 ### Requirements
 
@@ -260,8 +261,21 @@ All files are local to the machine running the MCP server (your workstation).
 
 ### Security considerations
 
+## ⚠️ SECURITY WARNING
+
+- **This MCP server grants AI agents full control at the authenticated user's permission level.**
+- If logged in as `root`, the AI agent can execute **any command** that root can, including destructive operations
+- The AI agent can read, modify, or delete files, install/remove software, change configurations, and perform any other system operations
+- There are no built-in safeguards preventing the AI agent from making irreversible changes
+- The `execute_command` tool includes instructions for AI agents to ask for confirmation before executing state-changing commands, but this is guidance - not enforcement. Always be vigilant.
+- Always use least-privilege accounts; avoid using root or admin accounts when possible.
+- Clearly define task boundaries in your instructions to AI agents (read-only vs. modification allowed).
+- Never use this server on production systems without extreme care and explicit task boundaries
+
+This tool is powerful and convenient, but with great power comes great responsibility. Always be explicit about what the AI agent is allowed to do.
+
+**File and Data Security:**
 - Never commit `~/.mcp-ssh-interactive/config.yml` or private keys to source control.
-- Limit privileges of the SSH users you automate.
 - Treat `~/.mcp-ssh-interactive/logs/*.log` as sensitive; they may contain command outputs.
 - Treat `~/.mcp-ssh-interactive/info/*.md` as sensitive if they contain passwords or sensitive information.
 

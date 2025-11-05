@@ -90,7 +90,7 @@ async def handle_list_tools() -> list[types.Tool]:
         ),
         types.Tool(
             name="execute_command",
-            description="Executes a command on a remote server via SSH. The command is sent to the terminal immediately and this function returns right away. To see the command output and check if it has completed, use get_terminal_output after a reasonable wait time. Look for the command prompt (e.g., '$', '#', or your custom prompt) to return in the output, which indicates the command has finished - just like a human would do when working in a terminal.",
+            description="Executes a command on a remote server via SSH. The command is sent to the terminal immediately and this function returns right away. To see the command output and check if it has completed, use get_terminal_output after a reasonable wait time. Look for the command prompt (e.g., '$', '#', or your custom prompt) to return in the output, which indicates the command has finished - just like a human would do when working in a terminal.\n\n**IMPORTANT INSTRUCTION FOR AI AGENTS:** Before executing any command that might modify the filesystem, change system configuration, install/remove software, restart services, or perform any other state-changing operation, you MUST ask the user for explicit confirmation. Only proceed after receiving clear user approval. Read-only operations can be executed without confirmation. When in doubt about whether a command is safe, ask for confirmation first.",
             inputSchema={
                 "type": "object",
                 "properties": {
